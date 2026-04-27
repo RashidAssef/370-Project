@@ -139,3 +139,16 @@ The system provides insights such as:
 
 ## 🎯 Goal
 To improve pet recovery efficiency by providing a structured, automated, and centralized system for managing lost and found cases.
+
+---
+
+## 🛠️ Setup & Deployment
+
+**Prerequisites:**  Node.js, MySQL
+
+1. Install dependencies:
+   `npm install`
+2. Configure your `.env` file with MySQL credentials
+3. Initialize the database using `public/schema.sql`
+4. Run the app:
+   `npm run dev`

@@ -1,0 +1,306 @@
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "../components/ui/button";
+import { Card, CardContent } from "../components/ui/card";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "../components/ui/select";
+import { Textarea } from "../components/ui/textarea";
+import { 
+  ChevronLeft, 
+  Camera, 
+  Upload, 
+  X, 
+  Info,
+  Heart,
+  Stethoscope,
+  ShieldCheck,
+  Plus
+} from "lucide-react";
+
+export default function AddPet() {
+  const navigate = useNavigate();
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  return (
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 dark:border-gray-800 pb-6">
+        <div className="space-y-1">
+          <button 
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-rose-500 transition-colors mb-2 group"
+          >
+            <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+            Back to My Pets
+          </button>
+          <h1 className="text-3xl font-black text-gray-900 dark:text-white flex items-center gap-3">
+            <Plus className="w-8 h-8 text-rose-500" />
+            Add New Pet Profile
+          </h1>
+          <p className="text-gray-500 dark:text-gray-400 font-medium">Create a high-fidelity profile for your beloved pet.</p>
+        </div>
+        
+        <div className="flex items-center gap-3">
+          <Button 
+            variant="outline" 
+            className="h-11 px-6 rounded-xl border-gray-200 dark:border-gray-800 font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800 transition-all"
+            onClick={() => navigate(-1)}
+          >
+            Cancel
+          </Button>
+          <Button 
+            className="h-11 px-8 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-bold shadow-lg shadow-rose-500/20 hover:shadow-rose-500/30 transition-all active:scale-95"
+          >
+            Save Profile
+          </Button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Left Column: Main Identity Info */}
+        <div className="lg:col-span-2 space-y-8">
+          <Card className="border border-gray-100 dark:border-gray-800 shadow-sm bg-white dark:bg-[#1A2234] rounded-2xl overflow-hidden">
+            <div className="p-6 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-slate-800/20 flex items-center gap-3">
+               <div className="w-10 h-10 rounded-xl bg-rose-100 dark:bg-rose-950/30 flex items-center justify-center text-rose-500">
+                 <Info className="w-5 h-5" />
+               </div>
+               <h2 className="font-bold text-lg text-gray-900 dark:text-white">Basic Information</h2>
+            </div>
+            <CardContent className="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label className="text-sm font-bold text-gray-700 dark:text-gray-300">Pet Name</Label>
+                <Input 
+                  placeholder="e.g. Charlie" 
+                  className="h-12 rounded-xl bg-gray-50 dark:bg-slate-900/50 border-gray-100 dark:border-gray-800 focus:ring-rose-500/20 focus:border-rose-500 font-medium"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-bold text-gray-700 dark:text-gray-300">Species</Label>
+                <Select>
+                  <SelectTrigger className="h-12 rounded-xl bg-gray-50 dark:bg-slate-900/50 border-gray-100 dark:border-gray-800 font-medium">
+                    <SelectValue placeholder="Select species" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl border-gray-100 dark:border-gray-800">
+                    <SelectItem value="dog">Dog</SelectItem>
+                    <SelectItem value="cat">Cat</SelectItem>
+                    <SelectItem value="bird">Bird</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-bold text-gray-700 dark:text-gray-300">Breed</Label>
+                <Input 
+                  placeholder="e.g. Golden Retriever" 
+                  className="h-12 rounded-xl bg-gray-50 dark:bg-slate-900/50 border-gray-100 dark:border-gray-800 focus:ring-rose-500/20 focus:border-rose-500 font-medium"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-bold text-gray-700 dark:text-gray-300">Gender</Label>
+                <Select>
+                  <SelectTrigger className="h-12 rounded-xl bg-gray-50 dark:bg-slate-900/50 border-gray-100 dark:border-gray-800 font-medium">
+                    <SelectValue placeholder="Select gender" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl border-gray-100 dark:border-gray-800">
+                    <SelectItem value="male">Male</SelectItem>
+                    <SelectItem value="female">Female</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-bold text-gray-700 dark:text-gray-300">Age</Label>
+                <Input 
+                  placeholder="e.g. 3 years" 
+                  className="h-12 rounded-xl bg-gray-50 dark:bg-slate-900/50 border-gray-100 dark:border-gray-800 focus:ring-rose-500/20 focus:border-rose-500 font-medium"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-bold text-gray-700 dark:text-gray-300">Color</Label>
+                <Input 
+                  placeholder="e.g. Golden Brown" 
+                  className="h-12 rounded-xl bg-gray-50 dark:bg-slate-900/50 border-gray-100 dark:border-gray-800 focus:ring-rose-500/20 focus:border-rose-500 font-medium"
+                />
+              </div>
+
+              <div className="space-y-2 md:col-span-2">
+                <Label className="text-sm font-bold text-gray-700 dark:text-gray-300">About the Pet</Label>
+                <Textarea 
+                  placeholder="Describe your pet's personality, favorite toys, or unique traits..." 
+                  className="min-h-[120px] rounded-xl bg-gray-50 dark:bg-slate-900/50 border-gray-100 dark:border-gray-800 focus:ring-rose-500/20 focus:border-rose-500 font-medium resize-none p-4"
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border border-gray-100 dark:border-gray-800 shadow-sm bg-white dark:bg-[#1A2234] rounded-2xl overflow-hidden">
+            <div className="p-6 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-slate-800/20 flex items-center gap-3">
+               <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-950/30 flex items-center justify-center text-blue-500">
+                 <Stethoscope className="w-5 h-5" />
+               </div>
+               <h2 className="font-bold text-lg text-gray-900 dark:text-white">Medical Information</h2>
+            </div>
+            <CardContent className="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+               <div className="space-y-2">
+                 <Label className="text-sm font-bold text-gray-700 dark:text-gray-300">Vaccination Status</Label>
+                 <Select>
+                   <SelectTrigger className="h-12 rounded-xl bg-gray-50 dark:bg-slate-900/50 border-gray-100 dark:border-gray-800 font-medium">
+                     <SelectValue placeholder="Select status" />
+                   </SelectTrigger>
+                   <SelectContent className="rounded-xl border-gray-100 dark:border-gray-800">
+                     <SelectItem value="up-to-date">Up to Date</SelectItem>
+                     <SelectItem value="partial">Partial</SelectItem>
+                     <SelectItem value="none">Not Vaccinated</SelectItem>
+                   </SelectContent>
+                 </Select>
+               </div>
+
+               <div className="space-y-2">
+                 <Label className="text-sm font-bold text-gray-700 dark:text-gray-300">Medical Weight (kg)</Label>
+                 <Input 
+                   type="number"
+                   placeholder="e.g. 12.5" 
+                   className="h-12 rounded-xl bg-gray-50 dark:bg-slate-900/50 border-gray-100 dark:border-gray-800 focus:ring-rose-500/20 focus:border-rose-500 font-medium"
+                 />
+               </div>
+
+               <div className="space-y-2 md:col-span-2">
+                 <Label className="text-sm font-bold text-gray-700 dark:text-gray-300">Special Medical Conditions / Allergies</Label>
+                 <Textarea 
+                   placeholder="List any medical conditions or allergies..." 
+                   className="min-h-[100px] rounded-xl bg-gray-50 dark:bg-slate-900/50 border-gray-100 dark:border-gray-800 focus:ring-rose-500/20 focus:border-rose-500 font-medium resize-none p-4"
+                 />
+               </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Right Column: Photo Upload + Security Tips */}
+        <div className="space-y-8">
+          <Card className="border border-gray-100 dark:border-gray-800 shadow-sm bg-white dark:bg-[#1A2234] rounded-2xl overflow-hidden">
+             <div className="p-6 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-slate-800/20 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-950/30 flex items-center justify-center text-purple-500">
+                  <Camera className="w-5 h-5" />
+                </div>
+                <h2 className="font-bold text-lg text-gray-900 dark:text-white">Pet Photo</h2>
+             </div>
+             <CardContent className="p-6 space-y-6">
+                <div className="relative group">
+                  <div 
+                    className={`w-full aspect-[4/5] rounded-2xl border-2 border-dashed transition-all flex flex-col items-center justify-center gap-4 bg-gray-50/50 dark:bg-slate-900/30 ${
+                      imagePreview ? "border-rose-200 dark:border-rose-900/30" : "border-gray-200 dark:border-gray-800 hover:border-rose-300 dark:hover:border-rose-800"
+                    } relative overflow-hidden`}
+                  >
+                    {imagePreview ? (
+                      <>
+                        <img src={imagePreview} className="w-full h-full object-cover" alt="Preview" />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                           <Button 
+                             size="sm" 
+                             variant="destructive" 
+                             className="rounded-xl font-bold h-10 px-4"
+                             onClick={() => setImagePreview(null)}
+                           >
+                             <X className="w-4 h-4 mr-2" />
+                             Remove Photo
+                           </Button>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="w-16 h-16 rounded-full bg-rose-50 dark:bg-rose-950/20 flex items-center justify-center text-rose-500">
+                          <Upload className="w-8 h-8" />
+                        </div>
+                        <div className="text-center px-4">
+                          <p className="font-bold text-gray-700 dark:text-gray-300">Click to upload photo</p>
+                          <p className="text-xs text-gray-500 mt-1">High resolution JPG or PNG</p>
+                        </div>
+                        <input 
+                          type="file" 
+                          className="absolute inset-0 opacity-0 cursor-pointer" 
+                          onChange={handleImageChange}
+                          accept="image/*"
+                        />
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-xl bg-amber-50/50 dark:bg-amber-950/10 border border-amber-100/50 dark:border-amber-900/20 space-y-2">
+                   <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-bold text-sm">
+                      <Camera className="w-4 h-4" />
+                      Pro Tip
+                   </div>
+                   <p className="text-[11px] leading-relaxed text-gray-600 dark:text-gray-400 font-medium">
+                     Clear, front-facing photos help our AI better match your pet in case they ever get lost.
+                   </p>
+                </div>
+             </CardContent>
+          </Card>
+
+          <Card className="border border-gray-100 dark:border-gray-800 shadow-sm bg-gradient-to-br from-rose-50/50 to-white dark:from-rose-950/10 dark:to-[#1A2234] rounded-2xl overflow-hidden p-6">
+             <div className="space-y-4">
+                <div className="flex items-center gap-3 text-rose-600 dark:text-rose-400">
+                   <ShieldCheck className="w-6 h-6" />
+                   <h3 className="font-bold text-lg">Safe & Secure</h3>
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-400 font-medium leading-relaxed">
+                  Your pet's data is only used for tracking and recovery purposes. We prioritize their safety and your privacy.
+                </p>
+                <ul className="space-y-3">
+                   {[
+                     "Encrypted Medical Data",
+                     "Private Contact Info",
+                     "Real-time Alerts"
+                   ].map((item, i) => (
+                     <li key={i} className="flex items-center gap-2 text-[12px] font-bold text-gray-700 dark:text-gray-300">
+                        <Heart className="w-3.5 h-3.5 text-rose-500 fill-current" />
+                        {item}
+                     </li>
+                   ))}
+                </ul>
+             </div>
+          </Card>
+        </div>
+      </div>
+
+      {/* Bottom Save Bar - Replicating Premium anchored feel */}
+      <div className="pt-4 flex justify-end gap-4 border-t border-gray-100 dark:border-gray-800">
+        <Button 
+          variant="outline" 
+          className="h-12 px-8 rounded-xl border-gray-200 dark:border-gray-800 font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800 transition-all"
+          onClick={() => navigate(-1)}
+        >
+          Discard Changes
+        </Button>
+        <Button 
+          className="h-12 px-12 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-bold shadow-xl shadow-rose-500/20 hover:shadow-rose-500/30 transition-all active:scale-95"
+        >
+          Create Profile
+        </Button>
+      </div>
+    </div>
+  );
+}
