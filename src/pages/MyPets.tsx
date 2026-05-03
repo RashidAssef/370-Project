@@ -244,7 +244,7 @@ export default function MyPets() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-3 gap-2">
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 rounded-full bg-gray-50 dark:bg-slate-800/50 flex items-center justify-center shrink-0">
                         <Calendar className="w-5 h-5 text-gray-400" />
@@ -252,6 +252,15 @@ export default function MyPets() {
                       <div className="min-w-0">
                         <p className="font-black text-gray-900 dark:text-white text-[16px] truncate">{pet.age}</p>
                         <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Age</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-full bg-gray-50 dark:bg-slate-800/50 flex items-center justify-center shrink-0">
+                        <User className="w-5 h-5 text-gray-400" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-black text-gray-900 dark:text-white text-[16px] truncate capitalize">{pet.gender?.toLowerCase() || 'Unknown'}</p>
+                        <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Gender</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
