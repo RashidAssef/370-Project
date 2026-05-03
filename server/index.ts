@@ -240,7 +240,7 @@ async function startServer() {
                    );
 
                    // If high confidence match, move both cases to UNDER_REVIEW
-                   if (matchScore >= 0.80) {
+                   if (matchScore >= 0.65) {
                      await pool.query(
                        "UPDATE CaseTable SET status = 'UNDER_REVIEW' WHERE case_id IN (?, ?)",
                        [caseId, match.case_id]
@@ -702,7 +702,7 @@ async function startServer() {
                 matchScore = Math.min(0.98, Math.max(0.1, matchScore));
                 await pool.query("INSERT INTO Matches (lost_report_id, found_report_id, match_score) VALUES (?, ?, ?)", [lost_report_id, found_report_id, matchScore]);
                 
-                if (matchScore >= 0.80) {
+                if (matchScore >= 0.65) {
                   await pool.query("UPDATE CaseTable SET status = 'UNDER_REVIEW' WHERE case_id IN (?, ?)", [req.params.id, match.case_id]);
                 }
 
