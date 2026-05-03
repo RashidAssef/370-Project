@@ -115,7 +115,10 @@ export default function DashboardLayout() {
     navigate('/');
   };
 
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  // Make the user object reactive to navigation (it will refresh after login redirect)
+  const user = React.useMemo(() => {
+    return JSON.parse(localStorage.getItem("user") || "{}");
+  }, [location.pathname]);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#0f1520] flex font-sans">
