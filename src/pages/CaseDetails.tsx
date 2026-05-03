@@ -443,7 +443,43 @@ export default function CaseDetails({ isPublicView = false }: { isPublicView?: b
                             <p className="text-[10px] font-bold text-green-600 mt-0.5">{Math.round(match.match_score * 100)}% Match</p>
                           </div>
                         </div>
-                        <Button size="sm" variant="outline" onClick={() => navigate(`/app/matches`)} className="h-8 text-[10px] border-purple-200 text-purple-700 bg-purple-50 hover:bg-purple-100 dark:border-purple-900/50 dark:bg-purple-900/30 dark:text-purple-300 px-3">View</Button>
+                        <div className="flex gap-2">
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            onClick={() => navigate(`/app/matches`)} 
+                            className="h-8 text-[10px] border-purple-200 text-purple-700 bg-purple-50 hover:bg-purple-100 dark:border-purple-900/50 dark:bg-purple-900/30 dark:text-purple-300 px-3"
+                          >
+                            View
+                          </Button>
+                          {isAdmin && match.match_status !== 'CONFIRMED' && (
+                            <Button 
+                              size="sm" 
+                              onClick={async () => {
+                                try {
+                                  const token = localStorage.getItem("token");
+                                  const res = await fetch(getApiUrl(`/api/matches/${match.match_id}/status`), {
+                                    method: 'PUT',
+                                    headers: { 
+                                      'Content-Type': 'application/json',
+                                      'Authorization': `Bearer ${token}` 
+                                    },
+                                    body: JSON.stringify({ status: 'CONFIRMED' })
+                                  });
+                                  if (res.ok) {
+                                    // Refresh the page data
+                                    window.location.reload();
+                                  }
+                                } catch (err) {
+                                  console.error("Quick approve failed:", err);
+                                }
+                              }}
+                              className="h-8 text-[10px] bg-green-600 hover:bg-green-700 text-white px-3 font-bold"
+                            >
+                              Confirm
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     ))}
                   </div>
