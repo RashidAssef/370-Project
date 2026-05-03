@@ -242,7 +242,7 @@ async function startServer() {
                    // If high confidence match, move both cases to UNDER_REVIEW
                    if (matchScore >= 0.65) {
                      await pool.query(
-                       "UPDATE CaseTable SET status = 'UNDER_REVIEW' WHERE case_id IN (?, ?)",
+                       "UPDATE CaseTable SET status = 'UNDER_REVIEW' WHERE case_id IN (?, ?) AND status = 'REPORTED'",
                        [caseId, match.case_id]
                      );
                      console.log(`Auto-review: Cases ${caseId} and ${match.case_id} moved to UNDER_REVIEW due to ${Math.round(matchScore*100)}% match.`);
@@ -703,7 +703,7 @@ async function startServer() {
                 await pool.query("INSERT INTO Matches (lost_report_id, found_report_id, match_score) VALUES (?, ?, ?)", [lost_report_id, found_report_id, matchScore]);
                 
                 if (matchScore >= 0.65) {
-                  await pool.query("UPDATE CaseTable SET status = 'UNDER_REVIEW' WHERE case_id IN (?, ?)", [req.params.id, match.case_id]);
+                  await pool.query("UPDATE CaseTable SET status = 'UNDER_REVIEW' WHERE case_id IN (?, ?) AND status = 'REPORTED'", [req.params.id, match.case_id]);
                 }
 
                 await pool.query("INSERT INTO Notification (user_id, message) VALUES (?, ?)", [match.user_id, `Match Update: A new potential hit was found after a report update. Your case is now Under Review.`]);
@@ -1405,20 +1405,28 @@ async function startServer() {
       if (matchRows.length === 0) return res.status(403).json({ error: "Unauthorized to review this match" });
 
       const match = matchRows[0];
-      await pool.query("UPDATE Matches SET match_status = ? WHERE match_id = ?", [status, req.params.id]);
+      const normalizedStatus = String(status).toUpperCase();
       
-      if (status === 'CONFIRMED') {
+      console.log(`[Match Review] Match ID: ${req.params.id}, New Status: ${normalizedStatus}`);
+      console.log(`[Match Review] Impacted Cases: ${match.lost_case_id}, ${match.found_case_id}`);
+
+      await pool.query("UPDATE Matches SET match_status = ? WHERE match_id = ?", [normalizedStatus, req.params.id]);
+      
+      if (normalizedStatus === 'CONFIRMED') {
         // Update both cases to MATCH_FOUND
-        await pool.query(
+        const [updateRes]: any = await pool.query(
           "UPDATE CaseTable SET status = 'MATCH_FOUND' WHERE case_id IN (?, ?)", 
           [match.lost_case_id, match.found_case_id]
         );
-      } else if (status === 'REJECTED') {
-        // Move cases back to REPORTED if they were UNDER_REVIEW
+        console.log(`[Match Review] Cases updated to MATCH_FOUND. Affected rows: ${updateRes.affectedRows}`);
+      } else if (normalizedStatus === 'REJECTED') {
+        // Move cases back to REPORTED ONLY IF they were UNDER_REVIEW
+        // This avoids reverting cases that might have OTHER confirmed matches
         await pool.query(
           "UPDATE CaseTable SET status = 'REPORTED' WHERE case_id IN (?, ?) AND status = 'UNDER_REVIEW'",
           [match.lost_case_id, match.found_case_id]
         );
+        console.log(`[Match Review] Cases reverted to REPORTED (if they were UNDER_REVIEW).`);
       }
       
       res.json({ message: "Match status updated successfully" });
