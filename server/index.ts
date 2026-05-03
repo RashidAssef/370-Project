@@ -1405,28 +1405,29 @@ async function startServer() {
       if (matchRows.length === 0) return res.status(403).json({ error: "Unauthorized to review this match" });
 
       const match = matchRows[0];
-      const normalizedStatus = String(status).toUpperCase();
+      const normalizedStatus = String(status).trim().toUpperCase();
       
-      console.log(`[Match Review] Match ID: ${req.params.id}, New Status: ${normalizedStatus}`);
-      console.log(`[Match Review] Impacted Cases: ${match.lost_case_id}, ${match.found_case_id}`);
+      console.log(`[Match Action] Match ID: ${req.params.id} -> ${normalizedStatus}`);
 
+      // 1. Update the Match record
       await pool.query("UPDATE Matches SET match_status = ? WHERE match_id = ?", [normalizedStatus, req.params.id]);
       
+      // 2. Handle CaseTable transitions based on action
       if (normalizedStatus === 'CONFIRMED') {
-        // Update both cases to MATCH_FOUND
-        const [updateRes]: any = await pool.query(
+        console.log(`[Match Action] Confirming Cases: ${match.lost_case_id}, ${match.found_case_id}`);
+        await pool.query(
           "UPDATE CaseTable SET status = 'MATCH_FOUND' WHERE case_id IN (?, ?)", 
           [match.lost_case_id, match.found_case_id]
         );
-        console.log(`[Match Review] Cases updated to MATCH_FOUND. Affected rows: ${updateRes.affectedRows}`);
-      } else if (normalizedStatus === 'REJECTED') {
-        // Move cases back to REPORTED ONLY IF they were UNDER_REVIEW
-        // This avoids reverting cases that might have OTHER confirmed matches
+      } 
+      else if (normalizedStatus === 'REJECTED') {
+        console.log(`[Match Action] Rejecting Match. Reverting cases to REPORTED if they were UNDER_REVIEW.`);
+        // We ONLY revert to REPORTED if they are currently UNDER_REVIEW.
+        // If a case is already MATCH_FOUND (from a DIFFERENT match), we DO NOT revert it.
         await pool.query(
           "UPDATE CaseTable SET status = 'REPORTED' WHERE case_id IN (?, ?) AND status = 'UNDER_REVIEW'",
           [match.lost_case_id, match.found_case_id]
         );
-        console.log(`[Match Review] Cases reverted to REPORTED (if they were UNDER_REVIEW).`);
       }
       
       res.json({ message: "Match status updated successfully" });
